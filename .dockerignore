@@ -1,0 +1,15 @@
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+docker-compose*.yml
+src/vendor/
+src/node_modules/
+src/storage/logs/
+src/bootstrap/cache/
+README.md
+.DS_Store
+.idea/
+.vscode/
+src/tests/

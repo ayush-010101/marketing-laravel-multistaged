@@ -1,1 +1,26 @@
-# TODO: Will be filled in Step 4
+# ============================================================
+# Docker Compose Base Configuration
+# Shared settings between development and production
+# ============================================================
+
+# This is the version of Docker Compose syntax we're using
+version: '3.8'
+
+services:
+
+  # ============================================================
+  # APP — PHP-FPM (Laravel)
+  # This is your actual Laravel application
+  # ============================================================
+  app:
+    # Build from our custom Dockerfile
+    # context: the folder Docker uses as root when building
+    # dockerfile: which Dockerfile to use
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+      # Target the "production" stage of our multi-stage Dockerfile
+      target: production
+
+    # Container name — easier to reference than random Docker names
+    container_name: marketing_app

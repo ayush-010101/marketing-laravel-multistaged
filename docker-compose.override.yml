@@ -1,45 +1,22 @@
-# ============================================================
-# Development Overrides
-# Automatically loaded when you run: docker compose up
-# NEVER used in production
-# ============================================================
-
-version: '3.8'
-
 services:
 
   app:
-    # In development we build targeting the builder stage
-    # which includes Composer, Node and dev tools
     build:
       target: builder
-
-    # Mount your local src/ folder into the container
-    # This means any change you make to code on your laptop
-    # is instantly reflected inside the container
-    # No need to rebuild the image every time you change code
     volumes:
       - ./src:/var/www/html
-      - /var/www/html/vendor
-      - /var/www/html/node_modules
-
     environment:
       APP_ENV: local
       APP_DEBUG: "true"
 
   nginx:
-    # In dev, expose on 8080 to avoid conflicts with anything
-    # already running on port 80 on your laptop
     ports:
       - "8080:80"
 
   mysql:
-    # Expose MySQL port to your laptop so you can connect
-    # with a database tool like TablePlus or DBeaver
     ports:
       - "3306:3306"
 
   redis:
-    # Expose Redis port for local debugging
     ports:
       - "6379:6379"

@@ -1,26 +1,95 @@
-# ============================================================
-# Docker Compose Base Configuration
-# Shared settings between development and production
-# ============================================================
-
-# This is the version of Docker Compose syntax we're using
-version: '3.8'
-
 services:
 
-  # ============================================================
-  # APP — PHP-FPM (Laravel)
-  # This is your actual Laravel application
-  # ============================================================
   app:
-    # Build from our custom Dockerfile
-    # context: the folder Docker uses as root when building
-    # dockerfile: which Dockerfile to use
     build:
       context: .
       dockerfile: docker/php/Dockerfile
-      # Target the "production" stage of our multi-stage Dockerfile
       target: production
-
-    # Container name — easier to reference than random Docker names
     container_name: marketing_app
+    restart: unless-stopped
+    environment:
+      - APP_ENV=${APP_ENV}
+      - APP_KEY=${APP_KEY}
+      - APP_DEBUG=${APP_DEBUG}
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - CACHE_DRIVER=redis
+      - SESSION_DRIVER=redis
+      - QUEUE_CONNECTION=redis
+    volumes:
+      - storage_data:/var/www/html/storage
+      - bootstrap_cache:/var/www/html/bootstrap/cache
+    networks:
+      - marketing_network
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: marketing_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./src/public:/var/www/html/public:ro
+    networks:
+      - marketing_network
+    depends_on:
+      - app
+
+  mysql:
+    image: mysql:8.0
+    container_name: marketing_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - marketing_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  redis:
+    image: redis:7-alpine
+    container_name: marketing_redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    networks:
+      - marketing_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mysql_data:
+    driver: local
+  storage_data:
+    driver: local
+  bootstrap_cache:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  marketing_network:
+    driver: bridge

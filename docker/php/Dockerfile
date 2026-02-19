@@ -141,12 +141,19 @@ FROM php:8.3-fpm-alpine AS production
 # --------------------------------
 RUN apk add --no-cache \
     libpng \
+    libpng-dev \
     libjpeg-turbo \
+    libjpeg-turbo-dev \
     freetype \
+    freetype-dev \
     oniguruma \
+    oniguruma-dev \
     libxml2 \
+    libxml2-dev \
     zlib \
-    libzip
+    zlib-dev \
+    libzip \
+    libzip-dev
 
 # --------------------------------
 # Install PHP extensions in production image too

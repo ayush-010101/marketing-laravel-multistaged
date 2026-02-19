@@ -41,9 +41,7 @@ RUN composer install \
 
 COPY src/ .
 
-RUN php artisan config:cache \
-    && php artisan route:cache \
-    && php artisan view:cache
+
 
 # ============================================================
 # STAGE 2 — PRODUCTION

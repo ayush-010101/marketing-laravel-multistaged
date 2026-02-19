@@ -144,7 +144,9 @@ RUN apk add --no-cache \
     libjpeg-turbo \
     freetype \
     oniguruma \
-    libxml2
+    libxml2 \
+    zlib \
+    libzip
 
 # --------------------------------
 # Install PHP extensions in production image too

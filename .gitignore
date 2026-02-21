@@ -22,7 +22,6 @@ desktop.ini
 # IDE FILES
 .idea/
 .vscode/
-
 # LOGS
 /src/storage/logs/*.log
 *.log

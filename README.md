@@ -38,3 +38,5 @@ marketing-laravel-app/
 2. Run `cp .env.example .env` and fill in your values
 3. Run `docker compose up --build`
 4. Visit http://localhost:80
+
+adding a line to check automated CI/CD

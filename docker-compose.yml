@@ -1,6 +1,7 @@
 services:
 
   app:
+    image: ${DOCKERHUB_USERNAME}/marketing-laravel-app:latest
     build:
       context: .
       dockerfile: docker/php/Dockerfile
